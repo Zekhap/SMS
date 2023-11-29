@@ -78,7 +78,7 @@ def run_discord_bot():
     bot.run('YOUR_DISCORD_BOT_TOKEN')
 
 def run_flask():
-    app.run(port=25000, debug=False)
+    app.run(port=25530, debug=False)
 
 if __name__ == '__main__':
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
