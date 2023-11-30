@@ -64,11 +64,11 @@ def is_admin(ctx):
 async def set_config(interaction: discord.Interaction, channel: int):
     global config_data
 
-    if(channel)
+    if channel:
         global DISCORD_CHANNEL_ID
         config_data['CHANNEL'] = channel
         DISCORD_CHANNEL_ID = int(channel)
-    
+
         # Save the updated configuration to the file
         with open('config.json', 'w') as config_file:
             json.dump(config_data, config_file, indent=4)
