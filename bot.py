@@ -149,7 +149,6 @@ async def run_discord_bot():
         await bot.start(config_data['TOKEN'])
     except discord.LoginFailure:
         print("Invalid token. Please update the TOKEN in config.json.")
-        break
     except Exception as e:
         print(f"An error occurred: {e}")
 
