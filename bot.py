@@ -58,7 +58,7 @@ def is_admin(ctx):
     # Check if the command invoker is a Discord administrator
     return ctx.author.guild_permissions.administrator
 
-@bot.tree.command(name='config', help='Set configuration data')
+@bot.tree.command(name='config', description='Set configuration data')
 @commands.check(is_admin)
 async def set_config(ctx, key, value):
     global config_data
