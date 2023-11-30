@@ -6,6 +6,7 @@ import discord
 from datetime import datetime
 import pytz
 import json
+import asyncio
 
 # Define default configuration values
 default_config = {
@@ -157,7 +158,7 @@ if __name__ == '__main__':
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
         try:
             executor.submit(run_flask)
-            executor.submit(run_discord_bot)
+            executor.submit(asyncio.run, run_discord_bot)
         except KeyboardInterrupt:
             # Handle Ctrl+C to stop the script without traceback
             print("Script interrupted by user.")
