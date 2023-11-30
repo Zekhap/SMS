@@ -62,6 +62,12 @@ def run_flask():
 
 if __name__ == '__main__':
     print("Starting Discord Bot!")
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        executor.submit(run_flask)
-        executor.submit(asyncio.run, run_discord_bot)
+    
+    # Start the Flask app in the main thread
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.start()
+
+    # Run the Discord bot in a separate thread using asyncio
+    loop = asyncio.get_event_loop()
+    loop.create_task(run_discord_bot())
+    loop.run_forever()
