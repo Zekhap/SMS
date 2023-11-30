@@ -59,22 +59,16 @@ def is_admin(ctx):
     return ctx.author.guild_permissions.administrator
 
 @bot.tree.command(name='config', description='Set configuration data')
+@app_commands.describe(channel='The id of the channel you want to set')
 @commands.check(is_admin)
-async def set_config(interaction: discord.Interaction, args):
+async def set_config(interaction: discord.Interaction, channel: int):
     global config_data
 
-    print(args)
-
-    # Check if the specified key is allowed to be modified
-    if key in allowed_keys:
-        # Update the config data
-        config_data[key] = value
-
-        # Update CHANNEL directly if key is CHANNEL
-        if key == 'CHANNEL':
-            global DISCORD_CHANNEL_ID
-            DISCORD_CHANNEL_ID = int(value)
-
+    if(channel)
+        global DISCORD_CHANNEL_ID
+        config_data['CHANNEL'] = channel
+        DISCORD_CHANNEL_ID = int(channel)
+    
         # Save the updated configuration to the file
         with open('config.json', 'w') as config_file:
             json.dump(config_data, config_file, indent=4)
