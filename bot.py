@@ -36,8 +36,6 @@ app = Flask(__name__)
 
 async def run_discord_bot():
     try:
-        bot.add_command(kod);
-        bot.add_command(set_config);
         await bot.start(config_data['TOKEN'])
     except discord.LoginFailure:
         print("Invalid token. Please update the TOKEN in config.json.")
