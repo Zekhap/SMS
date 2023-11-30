@@ -1,4 +1,5 @@
 from flask import Flask, request
+import logging
 import concurrent.futures
 import discord
 from discord.ext import commands
@@ -8,6 +9,7 @@ import pytz
 import json
 import asyncio
 import threading
+import traceback
 
 # Define default configuration values
 default_config = {
@@ -30,12 +32,13 @@ except FileNotFoundError:
 # Shared data structures
 recent_texts = []
 last_request_time = None
+logging.basicConfig(level=logging.ERROR)
 app = Flask(__name__)
 
 async def run_discord_bot():
     try:
         print(f'START');
-        await bot.start("MTE3OTgyODY3MzYwMDMwNzI0MQ.G-YUsb.aouqiq7QsTH_b-d0FXEntFY_EtWRuMdXHseulE")
+        await bot.start(config_data['TOKEN'])
     except discord.LoginFailure:
         print("Invalid token. Please update the TOKEN in config.json.")
     except Exception as e:
@@ -88,49 +91,44 @@ async def set_config_error(ctx, error):
 
 
 # Discord bot command to send codes
-@bot.command(name='kod', description='Skickar kod')
-async def kod_command(ctx):
-    global recent_texts, last_request_time
-
-    # Check if the saved channel exists or is set to 0
-    if config_data['CHANNEL'] == 0:
-        await ctx.send("Saved channel does not exist. Set a valid channel using setconfig command.")
-        return
-
+@bot.tree.command(name='kod', description='Skickar kod')
+async def kod(interaction: discord.Interaction):
     try:
-        user_id = ctx.author.id
+        global recent_texts, last_request_time, last_user_id
+
+        user_id = interaction.user.id
+        last_user_id = interaction.user.id
         stockholm_tz = pytz.timezone('Europe/Stockholm')
         current_time = datetime.now(stockholm_tz)
 
-        new_texts = recent_texts if last_request_time is None else [text for text in recent_texts if text["time"] > last_request_time]
+        if last_request_time is None:
+            new_texts = recent_texts
+        else:
+            new_texts = [text for text in recent_texts if text["time"] > last_request_time]
 
         if not new_texts:
-            await ctx.send("Ingen ny kod har anlänt.")
+            await interaction.response.send_message("Letar efter kod...")
         else:
             for text in new_texts:
-                await ctx.send(f"{current_time.strftime('%H:%M:%S')}\nKod: {text['content']}\n<@{user_id}>")
+                await interaction.response.send_message(f"{current_time.strftime('%H:%M:%S')}\nKod: {text['content']}\n<@{user_id}>")
 
-        # Update the last request time
         last_request_time = current_time
     except Exception as e:
-        print(f'Error processing !kod command: {e}')
-        await ctx.send('An error occurred while processing the command. Please try again later.')
-
+        print(f"An error has occurred in the discord command section: {e}")
+        traceback_string = traceback.format_exc()
+        logging.error(traceback_string)
 
 # Twilio SMS webhook endpoint
 @app.route('/sms', methods=['POST'])
 def sms():
-    global recent_texts
-
     try:
-        sms_content = request.form['Body']
-    
-        print('Received SMS:', sms_content)
+        global recent_texts, last_user_id, last_request_time
 
-        # Extract numbers from the SMS content
+        sms_content = request.form['Body']
+        print('Received SMS:', sms_content)
+        channel = bot.get_channel(DISCORD_CHANNEL_ID)
         numbers_only = extract_numbers(sms_content)
 
-        # Get the current time in Stockholm's timezone
         stockholm_tz = pytz.timezone('Europe/Stockholm')
         current_time = datetime.now(stockholm_tz)
 
@@ -140,16 +138,25 @@ def sms():
                 "content": numbers_only
             })
 
-        # Optionally, clean up old messages from recent_texts
         recent_texts = [text for text in recent_texts if (current_time - text["time"]).seconds < 600]
 
-        return '', 200
+        time_diff = (current_time - last_request_time).total_seconds()
+        print(f"user: {last_user_id}, time_diff: {time_diff}")
+        if time_diff < 120 and last_user_id != None:
+            print(f"Sending message to Discord channel...")
+            bot.loop.create_task(channel.send(f"-----------\n{current_time.strftime('%H:%M:%S')}\nKod: {numbers_only}\n<@{last_user_id}>"))
+
     except Exception as e:
-        print(f'Error processing SMS: {e}')
-        return 'Internal server error', 500
+        print(f"An error has occured in the flask route: {e}")
+        traceback_string = traceback.format_exc()
+        logging.error(traceback_string)
+        return jsonify({"error": "An internal error occurred"}), 500
+
+    return '', 200
 
 @bot.event
 async def on_ready():
+    await bot.tree.sync()
     print(f'Logged in as {bot.user.name}')
 
 def run_flask():
