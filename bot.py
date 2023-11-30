@@ -53,11 +53,6 @@ DISCORD_CHANNEL_ID = config_data['DISCORD_CHANNEL_ID']
 def extract_numbers(text):
     return ''.join(filter(str.isdigit, text))
 
-@set_config.error
-async def set_config_error(ctx, error):
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("You do not have permission to use this command.")
-
 def is_admin(ctx):
     # Check if the command invoker is a Discord administrator
     return ctx.author.guild_permissions.administrator
@@ -85,6 +80,11 @@ async def set_config(ctx, key, value):
         await ctx.send(f'Configuration updated: {key} set to {value}')
     else:
         await ctx.send(f'Error: {key} cannot be modified.')
+
+@set_config.error
+async def set_config_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send("You do not have permission to use this command.")
 
 
 # Discord bot command to send codes
@@ -157,12 +157,17 @@ def run_flask():
 
 if __name__ == '__main__':
     print("Starting Discord Bot!")
-    
-    # Start the Flask app in the main thread
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.start()
+    try:
+        # Start the Flask app in the main thread
+        flask_thread = threading.Thread(target=run_flask)
+        flask_thread.start()
 
-    # Run the Discord bot in a separate thread using asyncio
-    loop = asyncio.get_event_loop()
-    loop.create_task(run_discord_bot())
-    loop.run_forever()
+        # Run the Discord bot in a separate thread using asyncio
+        loop = asyncio.get_event_loop()
+        loop.create_task(run_discord_bot())
+        loop.run_forever()
+    except KeyboardInterrupt:
+        # Handle Ctrl+C to stop the script without traceback
+        print("Script interrupted by user.")
+    except Exception as e:
+        print(f"An error occurred during shutdown: {e}")
