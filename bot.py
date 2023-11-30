@@ -110,6 +110,11 @@ async def kod(interaction: discord.Interaction):
         traceback_string = traceback.format_exc()
         logging.error(traceback_string)
 
+#Sync
+@bot.command(name='sync', description='Sync Commands')
+async def sync(ctx):
+    await bot.tree.sync()
+
 # Twilio SMS webhook endpoint
 @app.route('/sms', methods=['POST'])
 def sms():
@@ -148,7 +153,6 @@ def sms():
 
 @bot.event
 async def on_ready():
-    await bot.tree.sync()
     print(f'Logged in as {bot.user.name}')
 
 def run_flask():
