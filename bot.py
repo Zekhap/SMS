@@ -142,6 +142,7 @@ async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
 def run_discord_bot():
+    print(f'Starting Discord Bot!');
     bot.run(config_data['TOKEN'])
 
 def run_flask():
@@ -152,5 +153,8 @@ if __name__ == '__main__':
         try:
             executor.submit(run_flask)
             executor.submit(run_discord_bot)
+        except KeyboardInterrupt:
+            # Handle Ctrl+C to stop the script without traceback
+            print("Script interrupted by user.")
         except Exception as e:
-            print(f'Error starting application: {e}')
+            print(f"An error occurred during shutdown: {e}")
