@@ -36,6 +36,8 @@ app = Flask(__name__)
 
 async def run_discord_bot():
     try:
+        bot.add_command(kod);
+        bot.add_command(set_config);
         await bot.start(config_data['TOKEN'])
     except discord.LoginFailure:
         print("Invalid token. Please update the TOKEN in config.json.")
@@ -47,7 +49,7 @@ async def run_discord_bot():
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
-bot = commands.Bot(intents=intents)
+bot = commands.Bot(command_prefix=config_data['PREFIX'], intents=intents)
 DISCORD_CHANNEL_ID = config_data['CHANNEL']
 
 # Function to extract numbers from a string
