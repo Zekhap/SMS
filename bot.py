@@ -12,11 +12,11 @@ import threading
 # Define default configuration values
 default_config = {
     'PREFIX': '!',
-    'DISCORD_CHANNEL_ID': 0,
+    'CHANNEL': 0,
     'TOKEN': 'your_default_token'
 }
 # Keys that are allowed to be modified
-allowed_keys = ['PREFIX', 'DISCORD_CHANNEL_ID']
+allowed_keys = ['PREFIX', 'CHANNEL']
 
 try:
     with open('config.json', 'r') as config_file:
@@ -47,7 +47,7 @@ intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
 bot = commands.Bot(command_prefix=config_data['PREFIX'], intents=intents)
-DISCORD_CHANNEL_ID = config_data['DISCORD_CHANNEL_ID']
+DISCORD_CHANNEL_ID = config_data['CHANNEL']
 
 # Function to extract numbers from a string
 def extract_numbers(text):
@@ -68,8 +68,8 @@ async def set_config(ctx, key, value):
         # Update the config data
         config_data[key] = value
 
-        # Update DISCORD_CHANNEL_ID directly if key is DISCORD_CHANNEL_ID
-        if key == 'DISCORD_CHANNEL_ID':
+        # Update CHANNEL directly if key is CHANNEL
+        if key == 'CHANNEL':
             global DISCORD_CHANNEL_ID
             DISCORD_CHANNEL_ID = int(value)
 
@@ -93,7 +93,7 @@ async def kod_command(ctx):
     global recent_texts, last_request_time
 
     # Check if the saved channel exists or is set to 0
-    if config_data['DISCORD_CHANNEL_ID'] == 0:
+    if config_data['CHANNEL'] == 0:
         await ctx.send("Saved channel does not exist. Set a valid channel using setconfig command.")
         return
 
