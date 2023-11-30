@@ -1,12 +1,11 @@
 from flask import Flask, request
 import logging
 import concurrent.futures
-import discord
 from discord.ext import commands
+import discord
 from discord import Permissions
 from datetime import datetime
 import pytz
-import json
 import asyncio
 import threading
 import traceback
@@ -58,7 +57,7 @@ def is_admin(ctx):
     # Check if the command invoker is a Discord administrator
     return ctx.author.guild_permissions.administrator
 
-@bot.command(name='setconfig', help='Set configuration data')
+@bot.tree.command(name='config', help='Set configuration data')
 @commands.check(is_admin)
 async def set_config(ctx, key, value):
     global config_data
@@ -88,8 +87,8 @@ async def set_config_error(ctx, error):
 
 
 # Discord bot command to send codes
-@bot.command(name='kod', description='Skickar kod')
-async def kod(interaction):
+@bot.tree.command(name='kod', description='Skickar kod')
+async def kod(interaction: discord.Interaction):
     try:
         global recent_texts, last_request_time, last_user_id
 
