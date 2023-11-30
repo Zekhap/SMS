@@ -143,7 +143,7 @@ def sms():
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
-def run_discord_bot():
+async def run_discord_bot():
     print(f'Starting Discord Bot!');
     try:
         await bot.start(config_data['TOKEN'])
