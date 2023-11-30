@@ -26,6 +26,25 @@ except FileNotFoundError:
     with open('config.json', 'w') as config_file:
         json.dump(config_data, config_file, indent=4)
 
+
+async def run_discord_bot():
+    print(f'Starting Discord Bot!');
+    try:
+        await bot.start(config_data['TOKEN'])
+    except discord.LoginFailure:
+        print("Invalid token. Please update the TOKEN in config.json.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+# Discord bot setup
+intents = discord.Intents.default()
+intents.messages = True
+intents.message_content = True
+bot = commands.Bot(command_prefix=config_data['PREFIX'], intents=intents)
+DISCORD_CHANNEL_ID = config_data['DISCORD_CHANNEL_ID']  # Replace with your Discord channel ID
+
+
 # Shared data structures
 recent_texts = []
 last_request_time = None
@@ -135,24 +154,9 @@ def sms():
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
-async def run_discord_bot():
-    print(f'Starting Discord Bot!');
-    try:
-        await bot.start(config_data['TOKEN'])
-    except discord.LoginFailure:
-        print("Invalid token. Please update the TOKEN in config.json.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
 
 def run_flask():
     app.run(host='0.0.0.0', port=25530, debug=False)
-
-# Discord bot setup
-intents = discord.Intents.default()
-intents.messages = True
-intents.message_content = True
-bot = commands.Bot(command_prefix=config_data['PREFIX'], intents=intents)
-DISCORD_CHANNEL_ID = config_data['DISCORD_CHANNEL_ID']  # Replace with your Discord channel ID
 
 if __name__ == '__main__':
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
