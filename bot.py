@@ -38,6 +38,8 @@ last_request_time = None
 
 app = Flask(__name__)
 
+print(f"Loaded TOKEN from config.json: {config_data['TOKEN']}")
+
 def is_admin(ctx):
     # Check if the command invoker is a Discord administrator
     return ctx.author.guild_permissions.administrator
@@ -142,8 +144,14 @@ async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
 def run_discord_bot():
-    print(f'Starting Discord Bot!: {config_data['TOKEN']}');
-    await bot.run(config_data['TOKEN'])
+    print(f'Starting Discord Bot!');
+    try:
+        await bot.start(config_data['TOKEN'])
+    except discord.LoginFailure:
+        print("Invalid token. Please update the TOKEN in config.json.")
+        break
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def run_flask():
     app.run(host='0.0.0.0', port=25530, debug=False)
