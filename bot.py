@@ -59,7 +59,7 @@ def is_admin(ctx):
     return ctx.author.guild_permissions.administrator
 
 @bot.tree.command(name='config', description='Set configuration data')
-@app_commands.describe(channel='The id of the channel you want to set')
+@bot.app_commands.describe(channel='The id of the channel you want to set')
 @commands.check(is_admin)
 async def set_config(interaction: discord.Interaction, channel: int):
     global config_data
