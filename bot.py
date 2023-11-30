@@ -72,9 +72,7 @@ async def set_config(interaction: discord.Interaction, channel: int):
         with open('config.json', 'w') as config_file:
             json.dump(config_data, config_file, indent=4)
 
-        await ctx.send(f'Configuration updated: {key} set to {value}')
-    else:
-        await ctx.send(f'Error: {key} cannot be modified.')
+        await interaction.response.send_message(f'Configuration updated: CHANNEL set to {channel}')
 
 @set_config.error
 async def set_config_error(ctx, error):
