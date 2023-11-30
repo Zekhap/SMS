@@ -142,8 +142,8 @@ async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
 def run_discord_bot():
-    print(f'Starting Discord Bot!');
-    bot.run(config_data['TOKEN'])
+    print(f'Starting Discord Bot!: {config_data['TOKEN']}');
+    await bot.run(config_data['TOKEN'])
 
 def run_flask():
     app.run(host='0.0.0.0', port=25530, debug=False)
