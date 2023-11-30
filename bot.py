@@ -13,12 +13,11 @@ import traceback
 
 # Define default configuration values
 default_config = {
-    'PREFIX': '!',
     'CHANNEL': 0,
     'TOKEN': 'your_default_token'
 }
 # Keys that are allowed to be modified
-allowed_keys = ['PREFIX', 'CHANNEL']
+allowed_keys = ['CHANNEL']
 
 try:
     with open('config.json', 'r') as config_file:
@@ -37,7 +36,6 @@ app = Flask(__name__)
 
 async def run_discord_bot():
     try:
-        print(f'START');
         await bot.start(config_data['TOKEN'])
     except discord.LoginFailure:
         print("Invalid token. Please update the TOKEN in config.json.")
@@ -49,7 +47,7 @@ async def run_discord_bot():
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
-bot = commands.Bot(command_prefix=config_data['PREFIX'], intents=intents)
+bot = commands.Bot(intents=intents)
 DISCORD_CHANNEL_ID = config_data['CHANNEL']
 
 # Function to extract numbers from a string
@@ -59,7 +57,6 @@ def extract_numbers(text):
 def is_admin(ctx):
     # Check if the command invoker is a Discord administrator
     return ctx.author.guild_permissions.administrator
-
 
 @bot.command(name='setconfig', help='Set configuration data')
 @commands.check(is_admin)
@@ -91,8 +88,8 @@ async def set_config_error(ctx, error):
 
 
 # Discord bot command to send codes
-@bot.tree.command(name='kod', description='Skickar kod')
-async def kod(interaction: discord.Interaction):
+@bot.command(name='kod', description='Skickar kod')
+async def kod(interaction):
     try:
         global recent_texts, last_request_time, last_user_id
 
@@ -176,5 +173,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         # Handle Ctrl+C to stop the script without traceback
         print("Script interrupted by user.")
+        exit
     except Exception as e:
         print(f"An error occurred during shutdown: {e}")
