@@ -143,10 +143,10 @@ def sms():
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
-async def run_discord_bot():
+def run_discord_bot():
     print(f'Starting Discord Bot!');
     try:
-        await bot.start(config_data['TOKEN'])
+        bot.start(config_data['TOKEN'])
     except discord.LoginFailure:
         print("Invalid token. Please update the TOKEN in config.json.")
     except Exception as e:
