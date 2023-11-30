@@ -60,8 +60,10 @@ def is_admin(ctx):
 
 @bot.tree.command(name='config', description='Set configuration data')
 @commands.check(is_admin)
-async def set_config(ctx, key, value):
+async def set_config(interaction: discord.Interaction, args):
     global config_data
+
+    print(args)
 
     # Check if the specified key is allowed to be modified
     if key in allowed_keys:
